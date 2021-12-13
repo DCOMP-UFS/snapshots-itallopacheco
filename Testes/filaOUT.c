@@ -15,6 +15,7 @@
  * 
  * 
  * TODO: > função snapshot
+ * TODO: transformar a o buffer em um modelo FIFO
  * 
  * testes de produtor-consumidor usando clocks 
  * 
@@ -43,6 +44,7 @@ pthread_mutex_t mutexBuffer;
 
 Clock buffer[10];
 int count = 0;
+
 
 void* producer(void* args) {
 
