@@ -47,34 +47,37 @@ int count = 0;
 void* producer(void* args) {
 
     while (1) {
-        // Produce
+        // Produz um clock com 1 mesmo numero aleatorio nas posições 0, 1 e 2.
         int x = rand() % 100;
         
         Clock clock = {{x, x, x}};
         sleep(1);
 
-        // Add to the buffer
-        sem_wait(&semEmpty);
-        pthread_mutex_lock(&mutexBuffer);
+        // Adiciona esse clock ao buffer, 
+        sem_wait(&semEmpty); // Verifica se o buffer tem slots.
+        pthread_mutex_lock(&mutexBuffer); // O mutex se faz necessário uma vez que tanto a função
+                                          // producer quanto a consumer vão alterar os valores de 
+                                          // count e acessar o buffer simultaneamente.
         
         buffer[count] = clock;
-        
         count++;
+        
         pthread_mutex_unlock(&mutexBuffer);
-        sem_post(&semFull);
+        sem_post(&semFull); //diminui a quantidade de slots livres 
     }
 }
 
 void* consumer(void* args) {
 
     while (1) {
+       
         int x;
         int y;
         int z;
         
-        // Remove from the buffer
-        sem_wait(&semFull);
-        pthread_mutex_lock(&mutexBuffer);
+        // remove os valores do primeiro elemento do buffer
+        sem_wait(&semFull); // Verifica se o buffer está vazio 
+        pthread_mutex_lock(&mutexBuffer); //Aqui o mutex também é necessario.
         
         x = buffer[0].p[0];
         y = buffer[0].p[1];
@@ -82,9 +85,9 @@ void* consumer(void* args) {
         count--;
         
         pthread_mutex_unlock(&mutexBuffer);
-        sem_post(&semEmpty);
+        sem_post(&semEmpty); // Libera um slot no buffer 
 
-        // Consume
+        // Printa o valor obtido 
         printf("Got (%d, %d, %d)\n", x, y, z);
         sleep(1);
     }
@@ -117,8 +120,8 @@ int main(int argc, char* argv[]) {
     srand(time(NULL));
     
     pthread_mutex_init(&mutexBuffer, NULL);
-    sem_init(&semEmpty, 0, 10);
-    sem_init(&semFull, 0, 0);
+    sem_init(&semEmpty, 0, 10); // indica que o semaforo tem 10 slots.
+    sem_init(&semFull, 0, 0); // indica que dos 10 slots ele tem 0 sots ocupados.
     
     //thread(&fila1);
     pthread_t th1;
