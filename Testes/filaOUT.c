@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
     
    
     pthread_create(&th1, NULL, &producer, NULL);
-    pthread_create(&th2, NULL, &producer,  NULL);
+    pthread_create(&th2, NULL, &consumer,  NULL);
     pthread_join(th1, NULL); 
     pthread_join(th2, NULL);
     
